@@ -1,0 +1,23 @@
+{
+  "name": "automation-exercise",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Felipanjos/automation-exercise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Felipanjos/automation-exercise/issues"
+  },
+  "homepage": "https://github.com/Felipanjos/automation-exercise#readme",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "1.43",
+    "@types/node": "^22.14.0",
+    "dotenv": "^16.4.7"
+  }
+}
