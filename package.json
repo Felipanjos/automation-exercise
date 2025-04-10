@@ -16,7 +16,7 @@
   "homepage": "https://github.com/Felipanjos/automation-exercise#readme",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "1.43",
+    "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.0",
     "dotenv": "^16.4.7"
   }
