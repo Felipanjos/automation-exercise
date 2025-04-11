@@ -6,6 +6,7 @@ import { brandMatcher } from '../matchers/brandMatcher';
 
 import { timedRequest } from '../utils/timedRequest';
 import { Helper } from '../utils/Helper';
+import { user } from '../.auth/user.ts';
 
 test.use({ baseURL: 'https://automationexercise.com/api/' });
 
@@ -64,7 +65,7 @@ test('API 4: PUT To All Brands List', async ({ request }) => {
   expect(responseBody.message).toBe('This request method is not supported.');
 });
 
-test.only('API 5: POST To Search Product', async ({ request }) => {
+test('API 5: POST To Search Product', async ({ request }) => {
   // ! This fails due to weid API composition, like product "Sleeves Top and Short - Blue & Pink" in category "Dress"
   // TODO divide responsibilities on the test
 
@@ -125,8 +126,93 @@ test('API 7: POST To Verify Login with valid details', async ({ request }) => {
     },
   });
   const responseBody = await response.json();
-  
+
   expect(response.status()).toBe(HTTP.STATUS.OK);
   expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
   expect(responseBody.message).toBe('User exists!');
+});
+
+test('API 8: POST To Verify Login without email parameter', async ({ request }) => {
+  const response = await request.post('verifyLogin', {
+    form: {
+      password: process.env.PASSWORD as string,
+    },
+  });
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.BAD_REQUEST);
+  expect(responseBody.message).toBe('Bad request, email or password parameter is missing in POST request.');
+});
+
+test('API 9: DELETE To Verify Login', async ({ request }) => {
+  const response = await request.delete('verifyLogin');
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.NOT_SUPPORTED);
+  expect(responseBody.message).toBe('This request method is not supported.');
+});
+
+test('API 10: POST To Verify Login with invalid details', async ({ request }) => {
+  const response = await request.post('verifyLogin', {
+    form: {
+      email: 'invalid!@*#(&!@*#&(!*@#&',
+      password: 'invalid!@(#)*!@(#*!)@#',
+    },
+  });
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.NOT_FOUND);
+  expect(responseBody.message).toBe('User not found!');
+});
+
+test('API 11: POST To Create/Register User Account', async ({ request }) => {
+  const response = await request.post('createAccount', { form: user });
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.CREATED);
+  expect(responseBody.message).toBe('User created!');
+  // TODO use fixtures to teardown user after
+});
+
+test('API 12: DELETE METHOD To Delete User Account', async ({ request }) => {
+  const response = await request.delete('deleteAccount', {
+    form: {
+      email: process.env.EMAIL as string,
+      password: process.env.password as string,
+    },
+  });
+
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
+  expect(responseBody.message).toBe('Account deleted!');
+});
+
+test('API 12.5: DELETE METHOD To Delete User Account', async ({ request }) => {
+  const response = await request.delete('deleteAccount', {
+    form: {
+      email: process.env.EMAIL as string,
+      password: process.env.password as string,
+    },
+  });
+
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.NOT_FOUND);
+  expect(responseBody.message).toBe('Account not found!');
+});
+
+test('API 14: GET user account detail by email', async ({ request }) => {
+  const response = await request.get(`getUserDetailByEmail?email=${process.env.EMAIL}`);
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
+  expect(responseBody.user).toEqual(user);
 });

@@ -8,6 +8,7 @@ node_modules/
 
 #support files
 utils/operations.js
+/.auth/*
 
 #secret
 .env
