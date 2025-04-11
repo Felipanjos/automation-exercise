@@ -116,3 +116,17 @@ test('API 6: POST To Search Product without search_product parameter', async ({ 
   expect(responseBody.responseCode).toBe(HTTP.STATUS.BAD_REQUEST);
   expect(responseBody.message).toBe('Bad request, search_product parameter is missing in POST request.');
 });
+
+test('API 7: POST To Verify Login with valid details', async ({ request }) => {
+  const response = await request.post('verifyLogin', {
+    form: {
+      email: process.env.EMAIL as string,
+      password: process.env.PASSWORD as string,
+    },
+  });
+  const responseBody = await response.json();
+  
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
+  expect(responseBody.message).toBe('User exists!');
+});
