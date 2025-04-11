@@ -1,7 +1,7 @@
 export class Helper {
-  static getRandomIndexByLength(length) {
-    return Math.floor(Math.random() * length)
+  static getRandomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
   }
 }
 
-
+// const randomBrand = responseBody.brands[Helper.getRandomItem(responseBody.brands.length)];

@@ -21,7 +21,7 @@ test('API 1: Get All Products List', async ({ request }) => {
   const productsLength = responseBody.products.length;
 
   // Validate a random product while checking structure
-  const randomProduct = responseBody.products[Helper.getRandomIndexByLength(productsLength)];
+  const randomProduct = Helper.getRandomItem(responseBody.products);
 
   expect(productsLength).toBeGreaterThan(0);
   expect(Array.isArray(responseBody.products)).toBeTruthy();
@@ -33,6 +33,7 @@ test('API 1: Get All Products List', async ({ request }) => {
 });
 
 test('API 2: POST To All Products List', async ({ request }) => {
+  // TODO tag negative test
   const response = await request.post('productsList');
   const responseBody = await response.json();
 
@@ -42,13 +43,76 @@ test('API 2: POST To All Products List', async ({ request }) => {
 });
 
 test('API 3: Get All Brands List', async ({ request }) => {
+  // TODO tag negative test
   const response = await request.get('brandsList');
   const responseBody = await response.json();
-  const randomBrand = responseBody.brands[Helper.getRandomIndexByLength(responseBody.brands.length)];
+  const randomBrand = Helper.getRandomItem(responseBody.brands);
 
   expect(response.status()).toBe(HTTP.STATUS.OK);
   expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
 
   expect(responseBody.brands.length).toBeGreaterThan(0);
   expect(randomBrand).toMatchObject(brandMatcher);
+});
+
+test('API 4: PUT To All Brands List', async ({ request }) => {
+  const response = await request.put('brandsList');
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.NOT_SUPPORTED);
+  expect(responseBody.message).toBe('This request method is not supported.');
+});
+
+test.only('API 5: POST To Search Product', async ({ request }) => {
+  // ! This fails due to weid API composition, like product "Sleeves Top and Short - Blue & Pink" in category "Dress"
+  // TODO divide responsibilities on the test
+
+  let response, responseBody, products, matchPattern;
+
+  const getAllProductsResponse = await request.get('productsList');
+  const getAllProductsResponseBody = await getAllProductsResponse.json();
+
+  const allProducts = getAllProductsResponseBody.products;
+  const allCategories: string[] = allProducts.map((p) => p.category.category);
+  const uniqueCategories = [...new Set(allCategories)];
+
+  const categoryKeywords = {
+    Tops: /top/i,
+    'Tops & Shirts': /top|shirt/i,
+    Tshirts: /t-shirt|t shirt|tshirt/i,
+  };
+
+  for (let category of uniqueCategories) {
+    response = await request.post('searchProduct', {
+      form: {
+        search_product: category,
+      },
+    });
+    responseBody = await response.json();
+    products = responseBody.products;
+
+    expect(products.length).toBeGreaterThan(0);
+    expect(response.status()).toBe(HTTP.STATUS.OK);
+    expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
+
+    for (let product of products) {
+      test.step(`Asserting products for category: ${category}`, async () => {
+        const matchPattern = categoryKeywords[category] || new RegExp(category, 'i');
+
+        expect.soft(product.name, `Product: ${product.name} in ${category}`).toMatch(matchPattern);
+        expect(product.category.category).toMatch(matchPattern);
+      });
+    }
+  }
+});
+
+test('API 6: POST To Search Product without search_product parameter', async ({ request }) => {
+  // TODO negative tests with blank data = response shouldn't be 200
+  const response = await request.post('searchProduct');
+  const responseBody = await response.json();
+
+  expect(response.status()).toBe(HTTP.STATUS.OK);
+  expect(responseBody.responseCode).toBe(HTTP.STATUS.BAD_REQUEST);
+  expect(responseBody.message).toBe('Bad request, search_product parameter is missing in POST request.');
 });
