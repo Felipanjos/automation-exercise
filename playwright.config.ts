@@ -1,9 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
+import { TestOptions } from './fixtures/test-options';
 
 require('dotenv').config();
 // import path from 'path';
 
-export default defineConfig({
+export default defineConfig<TestOptions>({
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -30,7 +31,6 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
