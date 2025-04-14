@@ -1,11 +1,12 @@
-import { APIResponse, test as base, expect } from '@playwright/test';
+import { APIResponse, test as base, expect, Page } from '@playwright/test';
 import { HTTP } from '../utils/http-status';
 import { user } from '../.auth/user';
 
 export type TestOptions = {
   deleteUser: void;
-  ensureCleanUser: void,
-  createUser: void,
+  ensureCleanUser: void;
+  createUser: void;
+  homePage: Page;
 };
 
 export const test = base.extend<TestOptions>({
@@ -13,7 +14,7 @@ export const test = base.extend<TestOptions>({
     await request.post('createAccount', { form: user });
     await use();
   },
-  
+
   ensureCleanUser: async ({ request }, use) => {
     await request.delete('deleteAccount', {
       form: {
@@ -23,7 +24,7 @@ export const test = base.extend<TestOptions>({
     });
     await use();
   },
-  
+
   deleteUser: async ({ request }, use) => {
     await use();
     const response = await request.delete('deleteAccount', {
@@ -38,5 +39,10 @@ export const test = base.extend<TestOptions>({
     expect(response.status()).toBe(HTTP.STATUS.OK);
     expect(responseBody.responseCode).toBe(HTTP.STATUS.OK);
     expect(responseBody.message).toBe('Account deleted!');
+  },
+
+  homePage: async ({ page }, use) => {
+    await page.goto('https://automationexercise.com/');
+    await use(page);
   },
 });
