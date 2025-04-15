@@ -4,7 +4,7 @@ export class Helper {
   }
 
   static getEnvVar(name: string): string {
-    const value = process.env[name];
+    const value = process.env[name.toUpperCase()];
     if (!value) throw new Error(`Missing env var: ${name}`);
     return value;
   }

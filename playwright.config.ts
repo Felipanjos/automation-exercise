@@ -2,9 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 import { TestOptions } from './fixtures/test-options';
 
 require('dotenv').config();
-// import path from 'path';
 
 export default defineConfig<TestOptions>({
+  timeout: 15000,
+
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,

@@ -1,22 +1,28 @@
-import { APIResponse, test as base, expect, Page } from '@playwright/test';
+import { test as base, expect, Page } from '@playwright/test';
 import { HTTP } from '../utils/http-status';
 import { user } from '../.auth/user';
+import { PageManager } from '../page/PageManager';
+import { Home } from '../page/Home';
 
 export type TestOptions = {
   deleteUser: void;
   ensureCleanUser: void;
   createUser: void;
-  homePage: Page;
+  manager: PageManager;
+  pageManager: PageManager;
+  apiURL: string
 };
 
 export const test = base.extend<TestOptions>({
-  createUser: async ({ request }, use) => {
-    await request.post('createAccount', { form: user });
+  apiURL: ['https://automationexercise.com/api', {option: true}],
+
+  createUser: async ({ request, apiURL }, use) => {
+    await request.post(`${apiURL}/createAccount`, { form: user });
     await use();
   },
 
-  ensureCleanUser: async ({ request }, use) => {
-    await request.delete('deleteAccount', {
+  ensureCleanUser: async ({ request, apiURL }, use) => {
+    await request.delete(`${apiURL}/deleteAccount`, {
       form: {
         email: process.env.EMAIL as string,
         password: process.env.password as string,
@@ -25,9 +31,9 @@ export const test = base.extend<TestOptions>({
     await use();
   },
 
-  deleteUser: async ({ request }, use) => {
+  deleteUser: async ({ request, apiURL }, use) => {
     await use();
-    const response = await request.delete('deleteAccount', {
+    const response = await request.delete(`${apiURL}/deleteAccount`, {
       form: {
         email: process.env.EMAIL as string,
         password: process.env.password as string,
@@ -41,8 +47,13 @@ export const test = base.extend<TestOptions>({
     expect(responseBody.message).toBe('Account deleted!');
   },
 
-  homePage: async ({ page }, use) => {
-    await page.goto('https://automationexercise.com/');
-    await use(page);
+  manager: async ({ page }, use) => {
+    const pm = new PageManager(page);
+    await pm.goto().home();
+    await use(pm);
+  },
+
+  pageManager: async ({ page }, use) => {
+    await use(new PageManager(page));
   },
 });
