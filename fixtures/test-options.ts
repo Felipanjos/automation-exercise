@@ -10,11 +10,13 @@ export type TestOptions = {
   createUser: void;
   manager: PageManager;
   pageManager: PageManager;
-  apiURL: string
+  apiURL: string;
+  createThenDeleteUser: void;
+  readyHomePage: void;
 };
 
 export const test = base.extend<TestOptions>({
-  apiURL: ['https://automationexercise.com/api', {option: true}],
+  apiURL: ['https://automationexercise.com/api', { option: true }],
 
   createUser: async ({ request, apiURL }, use) => {
     await request.post(`${apiURL}/createAccount`, { form: user });
@@ -47,10 +49,13 @@ export const test = base.extend<TestOptions>({
     expect(responseBody.message).toBe('Account deleted!');
   },
 
-  manager: async ({ page }, use) => {
-    const pm = new PageManager(page);
-    await pm.goto().home();
-    await use(pm);
+  createThenDeleteUser: async ({ createUser, deleteUser }, use) => {
+    await use();
+  },
+
+  readyHomePage: async ({ page, pageManager }, use) => {
+    await pageManager.goto().home();
+    await use();
   },
 
   pageManager: async ({ page }, use) => {

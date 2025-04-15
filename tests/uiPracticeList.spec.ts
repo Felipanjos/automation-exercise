@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../fixtures/test-options';
 import { user } from '../.auth/user';
 import { Helper } from '../utils/Helper';
+import path from 'path';
 
 test.use({ baseURL: 'http://automationexercise.com/' });
 
@@ -89,20 +90,16 @@ test('Test Case 1: Register User', async ({ page }) => {
   await page.getByRole('link', { name: 'Continue' }).click();
 });
 
-test('Test Case 2: Login User with correct email and password', async ({ page, manager, createUser }) => {
-  const homePage = manager.onHome();
-  const signPage = manager.onSign();
-  const headerSection = manager.onHeader();
+test('Test Case 2: Login User with correct email and password', async ({ page, pageManager, createThenDeleteUser }) => {
+  const homePage = pageManager.onHome();
+  const signPage = pageManager.onSign();
+  const headerSection = pageManager.onHeader();
 
   // 3. Verify that home homePage is visible successfully
-  await expect(page).toHaveTitle('Automation Exercise');
-  await expect(homePage.selectors.sliderTitle).toBeVisible();
-  await expect(homePage.selectors.sliderSubtitle).toBeVisible();
-  await expect(homePage.selectors.homeMainCategory).toBeVisible();
-  await expect(homePage.selectors.carouselImage).toBeVisible();
+  homePage.expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  await manager.goto().sign();
+  await pageManager.goto().sign();
 
   // 5. Verify 'Login to your account' is visible
   await expect(signPage.selectors.loginHeader).toBeVisible();
@@ -124,4 +121,120 @@ test('Test Case 2: Login User with correct email and password', async ({ page, m
   await expect(signPage.selectors.accountDeleted).toBeVisible();
 });
 
+test('Test Case 3: Login User with incorrect email and password', async ({ page, pageManager }) => {
+  const homePage = pageManager.onHome();
+  const header = pageManager.onHeader();
+  const signPage = pageManager.onSign();
 
+  // 3. Verify that home page is visible successfully
+  homePage.expectToBeVisible();
+
+  // 4. Click on 'Signup / Login' button
+  pageManager.goto().sign();
+
+  // 5. Verify 'Login to your account' is visible
+  await expect(signPage.selectors.loginHeader).toBeVisible();
+
+  // 6. Enter incorrect email address and password
+  await signPage.selectors.loginEmail.fill('asdkjahsd@aksdjalksdj.com');
+  await signPage.selectors.password.fill('(*!@&#(*!@&#');
+
+  // 7. Click 'login' button
+  await signPage.selectors.loginButton.click();
+
+  // 8. Verify error 'Your email or password is incorrect!' is visible
+  await expect(page.getByText('Your email or password is incorrect!')).toBeVisible();
+});
+
+test('Test Case 4: Logout User', async ({ page, pageManager, createThenDeleteUser }) => {
+  const { homePage, signPage, header } = pageManager.getStarterPageBundle();
+
+  // 3. Verify that home page is visible successfully
+  pageManager.onHome().expectToBeVisible();
+
+  // 4. Click on 'Signup / Login' button
+  await pageManager.goto().sign();
+
+  // 5. Verify 'Login to your account' is visible
+  await expect(signPage.selectors.loginHeader).toBeVisible();
+
+  // 6. Enter correct email address and password
+  await signPage.fillLoginEmail(Helper.getEnvVar('email'));
+  await signPage.fillPassword(Helper.getEnvVar('password'));
+
+  // 7. Click 'login' button
+  await signPage.selectors.loginButton.click();
+
+  // 8. Verify that 'Logged in as username' is visible
+  await expect(header.getLoggedIn(user.name)).toBeVisible();
+
+  // 9. Click 'Logout' button
+  await page.getByRole('link', { name: 'Logout' }).click();
+
+  // 10. Verify that user is navigated to login page
+  await expect(signPage.selectors.loginHeader).toBeVisible();
+});
+
+test('Test Case 5: Register User with existing email', async ({ page, pageManager, createThenDeleteUser }) => {
+  const { homePage, signPage, header } = pageManager.getStarterPageBundle();
+
+  // 3. Verify that home page is visible successfully
+  pageManager.onHome().expectToBeVisible();
+
+  // 4. Click on 'Signup / Login' button
+  await pageManager.goto().sign();
+
+  // 5. Verify 'Login to your account' is visible
+  await expect(signPage.selectors.signupHeader).toBeVisible();
+
+  // 6. Enter name and already registered email address
+  await signPage.fillSignupEmail(Helper.getEnvVar('email'));
+  await signPage.fillSignupName(user.name);
+
+  // 7. Click 'Signup' button
+  await signPage.selectors.signupButton.click();
+
+  // 8. Verify error 'Email Address already exist!' is visible
+  await expect(page.getByText('Email Address already exist!')).toBeVisible();
+});
+
+test('Test Case 6: Contact Us Form', async ({ page, pageManager, readyHomePage }) => {
+  const homePage = pageManager.onHome();
+  const header = pageManager.onHeader();
+  const contactPage = pageManager.onContact();
+
+  // 3. Verify that home page is visible successfully
+  await homePage.expectToBeVisible();
+
+  // 4. Click on 'Contact Us' button
+  await header.selectors.contactUs.click();
+
+  // 5. Verify 'GET IN TOUCH' is visible
+  await expect(page.getByRole('heading', { name: 'Get In Touch' })).toBeVisible();
+
+  // 6. Enter name, email, subject and message
+  await contactPage.fillContactForm();
+
+  // 7. Upload file
+  await contactPage.selectors.fileInput.setInputFiles(contactPage.file.path);
+  await page.screenshot({ path: path.join(__dirname, '../assets/screenshots/inputUpload.png') });
+
+  page.on('dialog', async (dialog) => {
+    expect(dialog.message()).toBe('Press OK to proceed!');
+    // 9. Click OK button
+    await dialog.accept();
+  });
+  
+  // !! JS binding mess up when accessing page through UI rather than URL, so this wait is to make sure thinks load again
+  // 8. Click 'Submit' button
+  await page.waitForTimeout(1000);
+  await contactPage.selectors.submitButton.click();
+
+  // 10. Verify success message 'Success! Your details have been submitted successfully.' is visible
+  await expect(contactPage.selectors.successMessage).toBeVisible();
+
+  // 11. Click 'Home' button and verify that landed to home page successfully
+  // TODO find a better locator for the home button
+  await contactPage.selectors.homeButton.click();
+  await homePage.expectToBeVisible();
+});

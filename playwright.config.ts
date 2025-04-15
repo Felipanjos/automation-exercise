@@ -4,8 +4,6 @@ import { TestOptions } from './fixtures/test-options';
 require('dotenv').config();
 
 export default defineConfig<TestOptions>({
-  timeout: 15000,
-
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -24,6 +22,7 @@ export default defineConfig<TestOptions>({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    testIdAttribute: 'data-qa'
   },
 
   /* Configure projects for major browsers */

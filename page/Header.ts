@@ -8,7 +8,9 @@ export class Header {
     this.page = page;
 
     this.selectors = {
-      deleteAccount: this.page.getByRole('link', { name: 'Delete Account' }),
+      deleteAccount: page.getByRole('link', { name: 'Delete Account' }),
+      contactUs: page.getByRole('link', { name: 'Contact us' }),
+      home: page.getByRole('link', { name: 'Home' }),
     }
   }
 

@@ -3,6 +3,7 @@ import { Navigation } from "./Navigation";
 import { Home } from "./Home";
 import { Sign } from "./Sign";
 import { Header } from "./Header";
+import { Contact } from "./Contact";
 
 export class PageManager {
   private readonly page: Page;
@@ -10,6 +11,7 @@ export class PageManager {
   private readonly home: Home;
   private readonly sign: Sign;
   private readonly header: Header;
+  private readonly contact: Contact;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +19,7 @@ export class PageManager {
     this.sign = new Sign(this.page);
     this.header = new Header(this.page);
     this.navigation = new Navigation(this.page);
+    this.contact = new Contact(this.page);
   }
 
   goto() {
@@ -34,4 +37,13 @@ export class PageManager {
   onHeader() {
     return this.header;
   }
+
+  onContact() {
+    return this.contact;
+  }
+
+  getStarterPageBundle() {
+    return {homePage: this.home, signPage: this.sign, header: this.header}
+  }
+
 }
