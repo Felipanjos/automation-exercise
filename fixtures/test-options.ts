@@ -12,7 +12,7 @@ export type TestOptions = {
   pageManager: PageManager;
   apiURL: string;
   createThenDeleteUser: void;
-  readyHomePage: void;
+  startAtHomePage: void;
 };
 
 export const test = base.extend<TestOptions>({
@@ -53,7 +53,7 @@ export const test = base.extend<TestOptions>({
     await use();
   },
 
-  readyHomePage: async ({ page, pageManager }, use) => {
+  startAtHomePage: async ({ page, pageManager }, use) => {
     await pageManager.goto().home();
     await use();
   },
