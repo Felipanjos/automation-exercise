@@ -5,7 +5,7 @@ import { Helper } from '../utils/Helper';
 import path from 'path';
 import fs from 'fs';
 
-test.use({ baseURL: 'http://automationexercise.com/' });
+test.use({ baseURL: 'https://automationexercise.com/' });
 
 test('Test Case 1: Register User', async ({ page }) => {
   // const slider = homePage.locator('#slider-carousel');
