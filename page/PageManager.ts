@@ -1,9 +1,10 @@
-import { Page } from "@playwright/test";
-import { Navigation } from "./Navigation";
-import { Home } from "./Home";
-import { Sign } from "./Sign";
-import { Header } from "./Header";
-import { Contact } from "./Contact";
+import { Page } from '@playwright/test';
+import { Navigation } from './Navigation';
+import { Home } from './Home';
+import { Sign } from './Sign';
+import { Header } from './Header';
+import { Contact } from './Contact';
+import { Product } from './Product';
 
 export class PageManager {
   private readonly page: Page;
@@ -12,6 +13,7 @@ export class PageManager {
   private readonly sign: Sign;
   private readonly header: Header;
   private readonly contact: Contact;
+  private readonly product: Product;
 
   constructor(page: Page) {
     this.page = page;
@@ -20,6 +22,7 @@ export class PageManager {
     this.header = new Header(this.page);
     this.navigation = new Navigation(this.page);
     this.contact = new Contact(this.page);
+    this.product = new Product(this.page);
   }
 
   goto() {
@@ -42,8 +45,11 @@ export class PageManager {
     return this.contact;
   }
 
-  getStarterPageBundle() {
-    return {homePage: this.home, signPage: this.sign, header: this.header}
+  onProduct() {
+    return this.product;
   }
 
+  getStarterPageBundle() {
+    return { homePage: this.home, signPage: this.sign, header: this.header };
+  }
 }
