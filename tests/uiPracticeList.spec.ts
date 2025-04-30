@@ -100,7 +100,7 @@ test('Test Case 2: Login User with correct email and password', async ({ page, p
   homePage.expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
 
   // 5. Verify 'Login to your account' is visible
   await expect(signPage.selectors.loginHeader).toBeVisible();
@@ -131,7 +131,7 @@ test('Test Case 3: Login User with incorrect email and password', async ({ page,
   homePage.expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  pageManager.goto().sign();
+  pageManager.navigateTo().sign();
 
   // 5. Verify 'Login to your account' is visible
   await expect(signPage.selectors.loginHeader).toBeVisible();
@@ -154,7 +154,7 @@ test('Test Case 4: Logout User', async ({ page, pageManager, createThenDeleteUse
   pageManager.onHome().expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
 
   // 5. Verify 'Login to your account' is visible
   await expect(signPage.selectors.loginHeader).toBeVisible();
@@ -183,7 +183,7 @@ test('Test Case 5: Register User with existing email', async ({ page, pageManage
   pageManager.onHome().expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
 
   // 5. Verify 'Login to your account' is visible
   await expect(signPage.selectors.signupHeader).toBeVisible();
@@ -544,7 +544,7 @@ test('Test Case 15: Place Order: Register before Checkout', async ({ page, pageM
   await homePage.expectToBeVisible();
 
   // 4. Click 'Signup / Login' button
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
 
   // 5. Fill all details in Signup and create account
   await signPage.signUp();
@@ -619,7 +619,7 @@ test('Test Case 16: Place Order: Login before Checkout', async ({ page, pageMana
   await homePage.expectToBeVisible();
 
   // 4. Click 'Signup / Login' button
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
 
   // 5. Fill email, password and click 'Login' button
   await signPage.selectors.loginEmail.fill(Helper.getEnvVar('email'));
@@ -806,7 +806,7 @@ test('Test Case 20: Search Products and Verify Cart After Login', async ({ page,
   await expect(page.getByRole('table').locator('tr > .cart_description')).toContainText('Lace Top For Women');
 
   // 10. Click 'Signup / Login' button and submit login details
-  await pageManager.goto().sign();
+  await pageManager.navigateTo().sign();
   await signPage.selectors.loginEmail.fill(Helper.getEnvVar('email'));
   await signPage.selectors.password.fill(Helper.getEnvVar('password'));
   await signPage.selectors.loginButton.click();

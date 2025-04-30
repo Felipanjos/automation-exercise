@@ -25,7 +25,7 @@ export class PageManager {
     this.product = new Product(this.page);
   }
 
-  goto() {
+  navigateTo() {
     return this.navigation;
   }
 
