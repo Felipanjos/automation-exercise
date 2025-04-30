@@ -7,40 +7,20 @@ import fs from 'fs';
 
 test.use({ baseURL: 'https://automationexercise.com/' });
 
-test('Test Case 1: Register User', async ({ page }) => {
-  // const slider = homePage.locator('#slider-carousel');
-  const slider = page.getByRole('heading', { name: 'AutomationExercise' });
-  const homeSubtitle = page.getByRole('heading', {
-    name: 'Full-Fledged practice website for Automation Engineers',
-  });
-  const homeMainCategory = page.getByRole('heading', { name: 'Features Items' });
-  const carouselImage = page.getByRole('img', { name: 'demo website for practice' });
-
+test('Test Case 1: Register User (UI teardown)', async ({ page, pageManager, startAtHomePage }) => {
   // 3. Verify that home page is visible successfully
-  await expect(page).toHaveTitle('Automation Exercise');
-  await expect(slider).toBeVisible();
-  await expect(homeMainCategory).toBeVisible();
-  await expect(homeSubtitle).toBeVisible();
-  await expect(carouselImage).toBeVisible();
+  await pageManager.onHome().expectToBeVisible();
 
   // 4. Click on 'Signup / Login' button
-  await page.getByRole('link', { name: 'Signup / Login' }).click();
+  await pageManager.navigateTo().loginPage();
 
   // 5. Verify 'New User Signup!' is visible
-  await expect(page.getByRole('heading', { name: 'New User Signup!' })).toBeVisible();
+  await pageManager.onLoginPage().assertSuccessfulPageLanding();
 
-  const nameField = page.getByRole('textbox', { name: 'Name' });
-  const emailAddress = page.locator('[data-qa="signup-email"]');
-
-  // 6. Enter name and email address
-  await nameField.fill(user.name);
-  await emailAddress.fill(process.env.EMAIL as string);
-
-  // 7. Click 'Signup' button
-  await page.getByRole('button', { name: 'Signup' }).click();
+  await pageManager.onLoginPage().fillNewUserSignUpAndSubmit();
 
   // 8. Verify that 'ENTER ACCOUNT INFORMATION' is visible
-  await expect(page.getByText('Enter Account Information')).toBeVisible();
+  await pageManager.onSignUpPage().assertSuccessfulPageLanding();
 
   // 9. Fill details: Title, Name, Email, Password, Date of birth
   await page.getByRole('radio', { name: 'Mr.', exact: true }).click();
