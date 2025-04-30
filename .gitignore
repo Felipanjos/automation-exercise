@@ -8,7 +8,7 @@ node_modules/
 
 #support files
 utils/operations.js
-/.auth/*
+/.auth/
 /assets
 
 #secret
