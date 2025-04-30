@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { user } from '../.auth/user';
 import { Helper } from '../utils/Helper';
 
-export class Sign {
+export class SignUpPage {
   readonly page: Page;
   readonly selectors: { [key: string]: Locator };
 
@@ -11,50 +11,11 @@ export class Sign {
 
     this.selectors = {
       accountDeleted: page.getByText('Account Deleted!'),
-      loginEmail: page.locator('[data-qa="login-email"]'),
-      password: page.getByRole('textbox', { name: 'password' }),
-      loginButton: page.getByRole('button', { name: 'Login' }),
-      loginHeader: page.getByRole('heading', { name: 'Login to your account' }),
-      signupHeader: page.getByRole('heading', { name: 'New User Signup!' }),
-      signupButton: page.getByRole('button', { name: 'Signup' }),
-      signupEmail: page.getByTestId('signup-email'),
-      signupName: page.getByRole('textbox', { name: 'Name' }),
+      accountInformationHeader: page.getByText('Enter Account Information'),
     };
   }
 
-  async fillLoginEmail(email) {
-    await this.selectors.loginEmail.fill(email);
-  }
-
-  async fillPassword(password) {
-    await this.selectors.password.fill(password);
-  }
-
-  async fillSignupEmail(email) {
-    await this.selectors.signupEmail.fill(email);
-  }
-
-  async fillSignupName(name) {
-    await this.selectors.signupName.fill(name);
-  }
-
-  async signUp() {
-      // 5. Verify 'New User Signup!' is visible
-      await expect(this.page.getByRole('heading', { name: 'New User Signup!' })).toBeVisible();
-    
-      const nameField = this.page.getByRole('textbox', { name: 'Name' });
-      const emailAddress = this.page.locator('[data-qa="signup-email"]');
-    
-      // 6. Enter name and email address
-      await nameField.fill(user.name);
-      await emailAddress.fill(process.env.EMAIL as string);
-    
-      // 7. Click 'Signup' button
-      await this.page.getByRole('button', { name: 'Signup' }).click();
-    
-      // 8. Verify that 'ENTER ACCOUNT INFORMATION' is visible
-      await expect(this.page.getByText('Enter Account Information')).toBeVisible();
-    
+  async fillFormAndSubmit() {
       // 9. Fill details: Title, Name, Email, Password, Date of birth
       await this.page.getByRole('radio', { name: 'Mr.', exact: true }).click();
       await this.page.getByRole('textbox', { name: 'Name *', exact: true }).fill(user.name);
@@ -86,5 +47,11 @@ export class Sign {
     
       // 13. Click 'Create Account button'
       await this.page.getByRole('button', { name: 'Create Account' }).click();
+  }
+
+  async assertSuccessfulPageLanding() {
+    await expect(this.page).toHaveURL('/signup');
+    await expect(this.page).toHaveTitle('Automation Exercise - Signup');
+    await expect(this.selectors.accountInformationHeader).toBeVisible();
   }
 }
