@@ -959,7 +959,7 @@ test('Test Case 24: Download Invoice after purchase order', async ({
 
   // 19. Click 'Download Invoice' button and verify invoice is downloaded successfully.
   page.on('download', async (download) => {
-    const downloadPath = path.join(__dirname, 'downloads', download.suggestedFilename());
+    const downloadPath = path.join(`${__dirname}/../assets/`, 'downloads', download.suggestedFilename());
     await download.saveAs(downloadPath);
     expect(fs.existsSync(downloadPath)).toBeTruthy();
   });
