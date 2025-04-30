@@ -228,7 +228,7 @@ test('Test Case 6: Contact Us Form', async ({ page, pageManager, startAtHomePage
 
   // !! JS binding mess up when accessing page through UI rather than URL, so this wait is to make sure thinks load again
   // 8. Click 'Submit' button
-  await page.waitForTimeout(1000);
+  await contactPage.selectors.submitButton.waitFor({ state: 'visible' });
   await contactPage.selectors.submitButton.click();
 
   // 10. Verify success message 'Success! Your details have been submitted successfully.' is visible
@@ -991,13 +991,13 @@ test('Test Case 25: Verify Scroll Up using "Arrow" button and Scroll Down functi
 
   // 4. Scroll down page to bottom
   await page.getByText('Copyright © 2021 All rights reserved').hover();
-  
+
   // 5. Verify 'SUBSCRIPTION' is visible
   await expect(page.getByRole('heading', { name: 'Subscription' })).toBeVisible();
-  
+
   // 6. Click on arrow at bottom right side to move upward
   await page.locator('#scrollUp').click();
-  
+
   // 7. Verify that page is scrolled up and 'Full-Fledged practice website for Automation Engineers' text is visible on screen
   await expect(homePage.selectors.sliderSubtitle).toBeVisible();
 });
