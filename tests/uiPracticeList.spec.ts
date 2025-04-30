@@ -228,7 +228,7 @@ test('Test Case 6: Contact Us Form', async ({ page, pageManager, startAtHomePage
 
   // !! JS binding mess up when accessing page through UI rather than URL, so this wait is to make sure thinks load again
   // 8. Click 'Submit' button
-  await page.waitForTimeout(1000);
+  await contactPage.selectors.submitButton.waitFor({state: 'visible'});
   await contactPage.selectors.submitButton.click();
 
   // 10. Verify success message 'Success! Your details have been submitted successfully.' is visible
