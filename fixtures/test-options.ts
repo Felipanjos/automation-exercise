@@ -54,7 +54,7 @@ export const test = base.extend<TestOptions>({
   },
 
   startAtHomePage: async ({ page, pageManager }, use) => {
-    await pageManager.goto().home();
+    await pageManager.navigateTo().home();
     await use();
   },
 
